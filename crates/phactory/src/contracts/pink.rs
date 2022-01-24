@@ -95,6 +95,8 @@ impl contracts::NativeContract for Pink {
                 let storage = cluster_storage(&mut context.contract_clusters, &self.cluster_id)
                     .expect("Pink cluster should always exists!");
 
+                info!("DEBUG-AES: Contract Query Input: {:?}", hex::encode(&input_data));
+
                 let (ink_result, _effects) = self.instance.bare_call(
                     storage,
                     origin.clone(),
@@ -123,6 +125,8 @@ impl contracts::NativeContract for Pink {
                     MessageOrigin::AccountId(origin) => origin.0.into(),
                     _ => return Err(TransactionError::BadOrigin),
                 };
+
+                info!("DEBUG-AES: Contract Command Input: {:?}", hex::encode(&message));
 
                 let storage = cluster_storage(&mut context.contract_clusters, &self.cluster_id)
                     .expect("Pink cluster should always exists!");

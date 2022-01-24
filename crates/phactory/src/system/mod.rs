@@ -471,6 +471,11 @@ impl<Platform: pal::Platform> System<Platform> {
         contract_id: &ContractId,
         req: OpaqueQuery,
     ) -> Result<OpaqueReply, OpaqueError> {
+        info!(
+            "DEBUG-AES: Incoming Contract {:?} Query: {:?}",
+            hex::encode(contract_id),
+            hex::encode(req)
+        );
         let contract = self
             .contracts
             .get_mut(contract_id)
@@ -876,7 +881,10 @@ impl<Platform: pal::Platform> System<Platform> {
                         block.now_ms,
                     )
                     .with_context(|| format!("Contract deployer: {:?}", deployer))
-                    .map_err(|_| TransactionError::FailedToExecute)?;
+                    .map_err(|err| {
+                        error!("DEBUG-AES: instantiate contract failed {:?}", err);
+                        TransactionError::FailedToExecute
+                    })?;
 
                 let cluster = self
                     .contract_clusters
@@ -1007,10 +1015,7 @@ pub fn apply_pink_side_effects(
         use pink::runtime::PinkEvent;
         match event {
             PinkEvent::Message(message) => {
-                contract.push_message(
-                    message.payload,
-                    message.topic,
-                );
+                contract.push_message(message.payload, message.topic);
             }
             PinkEvent::OspMessage(message) => {
                 contract.push_osp_message(
