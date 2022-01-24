@@ -66,7 +66,7 @@ impl Contract {
 
             let result = Contracts::bare_instantiate(
                 origin.clone(),
-                ENOUGH,
+                0,
                 GAS_LIMIT,
                 pallet_contracts_primitives::Code::Upload(code.into()),
                 input_data,
